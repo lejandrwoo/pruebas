@@ -108,7 +108,7 @@ export function createLabPanel({ params, onReset, onPreset, onModeChange, onPaus
 
   const tests = document.createElement('div');
   tests.className = 'group';
-  tests.innerHTML = '<h2>Pruebas de comportamiento</h2><p>Antes de pulsar una prueba, predice qué debería ocurrir.</p>';
+  tests.innerHTML = '<h2>Pruebas de comportamiento</h2>';
   panel.append(tests);
   for (const [id, label] of [
     ['inertia', '1 · Inercia'],

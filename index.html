@@ -1,13 +1,83 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="color-scheme" content="dark" />
-    <title>U3 · Forces Instrument</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Presentación - Relevo Generacional</title>
+</head>
+<body>
+  
+  <!-- CAPA 1: IMÁGENES DE FONDO (Pantalla completa) -->
+  <div id="background-layer">
+    <div class="bg-slide active"></div> <!-- Slide 1 -->
+    <div class="bg-slide" style="background-image: url('/FOTO_1.jpg')"></div> <!-- Slide 2 -->
+    <div class="bg-slide"></div> <!-- Slide 3 -->
+    <div class="bg-slide" style="background-image: url('/FOTO_2.jpg')"></div> <!-- Slide 4 -->
+    <div class="bg-slide" style="background-image: url('/FOTO_3.jpg')"></div> <!-- Slide 5 -->
+    <div class="bg-slide"></div> <!-- Slide 6 -->
+    <div class="bg-slide"></div> <!-- Slide 7 -->
+    <div class="bg-slide" style="background-image: url('/FOTO_4.jpg')"></div> <!-- Slide 8 -->
+    <div class="bg-slide"></div> <!-- Slide 9 -->
+    <div class="bg-slide"></div> <!-- Slide 10 -->
+    <div class="bg-slide"></div> <!-- Slide 11 -->
+    <div class="bg-slide" style="background-image: url('/FOTO_5.jpg')"></div> <!-- Slide 12 -->
+    <div class="bg-slide" style="background-image: url('/FOTO_6.jpg')"></div> <!-- Slide 13 -->
+  </div>
+
+  <!-- CAPA 2: PARTÍCULAS -->
+  <div id="app"></div>
+
+  <!-- CAPA 3: TEXTOS (Siempre por encima) -->
+  <div id="presentation">
+    <div class="slide active">
+      <h1>RELEVO GENERACIONAL: LA VENTAJA QUE NADIE ESTÁ APROVECHANDO</h1>
+      <p>@centrodeeventosupb</p>
+    </div>
+    <div class="slide">
+      <h1>¿un gran auditorio solo para hacer grados?</h1>
+    </div>
+    <div class="slide">
+      <h1>Los eventos no llegaron a la Universidad.<br>La Universidad decidió encontrarse con el mundo.</h1>
+    </div>
+    <div class="slide">
+      <h1>Academia + Industria + Ciudad</h1>
+    </div>
+    <div class="slide">
+      <h1>Los eventos nunca fueron el objetivo.<br>El impacto sí.</h1>
+    </div>
+    <div class="slide">
+      <h1>Un evento trae personas.<br>Una comunidad trae transformación.</h1>
+    </div>
+    <div class="slide">
+      <h1>El talento crece a la velocidad de la confianza.</h1>
+    </div>
+    <div class="slide">
+      <h1>La experiencia construye el camino.<br>Las nuevas generaciones descubren nuevas rutas.</h1>
+    </div>
+    <div class="slide">
+      <h1>Una visión.<br>Dos generaciones.</h1>
+    </div>
+    <div class="slide">
+      <h1>El crecimiento no ocurre cuando una generación reemplaza a otra.<br>Ocurre cuando trabajan juntas.</h1>
+    </div>
+    <div class="slide">
+      <h1>Los jóvenes no son el futuro.<br>Son el presente que muchas organizaciones aún no ven.</h1>
+    </div>
+    <div class="slide">
+      <h1>El futuro no se hereda.<br>Se construye.</h1>
+    </div>
+    <div class="slide">
+      <h1>QR con memorias (pp móvil)</h1>
+      <h1>QR redes @centrodeeventosupb</h1>
+    </div>
+  </div>
+
+  <!-- CAPA 4: CONTROLES -->
+  <div id="presentation-controls">
+    <button id="prevBtn">◀</button>
+    <button id="nextBtn">▶</button>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
 </html>

@@ -107,7 +107,8 @@ export function createSimulation({ renderer, scene, params, count = 131072 }) {
   })();
 
   // Circular sprite mask, avoiding visible square planes.
-  material.opacityNode = step(uv().xy.sub(0.5).length(), 0.5);
+  // OPACIDAD MODIFICADA (.mul(0.15)) PARA EFECTO SUTIL DE PRESENTACIÓN
+  material.opacityNode = step(uv().xy.sub(0.5).length(), 0.5).mul(0.15);
 
   const geometry = new THREE.PlaneGeometry(1, 1);
   const mesh = new THREE.InstancedMesh(geometry, material, count);
