@@ -5,7 +5,7 @@ import './styles.css';
 import { createParameters } from './simulation/parameters.js';
 import { createSimulation } from './simulation/createSimulation.js';
 
-const PARTICLE_COUNT = 131072;
+const PARTICLE_COUNT = 131072; 
 
 async function main() {
   const mount = document.querySelector('#app');
@@ -28,12 +28,8 @@ async function main() {
   await renderer.init();
 
   const params = createParameters();
-  // Hacer las partículas por defecto más pequeñas
-  params.particleSize.value = 0.015; 
-  
   const simulation = createSimulation({ renderer, scene, params, count: PARTICLE_COUNT });
 
-  // Fuerzas suavizadas para que sea elegante
   const applyPreset = (id) => {
     params.windEnabled.value = 0;
     params.radialEnabled.value = 0;
@@ -41,6 +37,16 @@ async function main() {
     params.dragEnabled.value = 0;
     params.wind.value.set(0, 0, 0);
     params.initialSpeed.value = 0;
+    params.particleSize.value = 0.015; 
+    
+    params.colorSlow.value.set('#46a6ff'); 
+    params.colorFast.value.set('#ffb35a'); 
+    params.attractor.value.set(0, 0, 0); 
+    
+    params.ecosystemMode.value = 0.0;
+    params.constellationMode.value = 0.0;
+    params.sphereMode.value = 0.0;
+    simulation.setSlideMode(-1);
 
     if (id === 'inertia') {
       params.initialSpeed.value = 0.2;
@@ -55,13 +61,12 @@ async function main() {
       params.radialStrength.value = -0.8;
     } else if (id === 'vortex') {
       params.radialEnabled.value = 1;
-      params.radialStrength.value = 0.3;
+      params.radialStrength.value = 0.5;
       params.vortexEnabled.value = 1;
-      params.vortexStrength.value = 1.0;
+      params.vortexStrength.value = 1.5;
       params.dragEnabled.value = 1;
       params.dragCoefficient.value = 0.15;
     }
-    simulation.reset();
   };
 
   addEventListener('resize', () => {
@@ -72,15 +77,6 @@ async function main() {
 
   simulation.reset();
 
-  // BUCLE
-  renderer.setAnimationLoop(() => {
-    simulation.stepSimulation();
-    renderer.render(scene, camera);
-  });
-
-  // ==========================================
-  // LÓGICA DE LA PRESENTACIÓN (TEXTOS + FOTOS)
-  // ==========================================
   let currentSlide = 0;
   const slides = document.querySelectorAll('.slide');
   const bgSlides = document.querySelectorAll('.bg-slide');
@@ -91,35 +87,67 @@ async function main() {
     slides.forEach((slide, index) => {
       slide.classList.toggle('active', index === currentSlide);
     });
-    // Sincronizar las fotos de fondo
     bgSlides.forEach((bg, index) => {
       bg.classList.toggle('active', index === currentSlide);
     });
 
-    // Cambiar las partículas dependiendo del slide
+    // Envía el número de slide actual al gestor de visuales en createSimulation.js
+    simulation.setSlideMode(currentSlide);
+
     switch(currentSlide) {
-      case 0: applyPreset('vortex'); break; // Título
-      case 1: applyPreset('inertia'); break; // Auditorio
-      case 3: applyPreset('attract'); break; // Academia + Industria
-      case 5: applyPreset('vortex'); break; // Comunidad
-      case 9: 
-        applyPreset('attract');
-        params.radialStrength.value = 1.5; // Unión generaciones
-        break; 
-      case 11: applyPreset('repel'); break; // Futuro
-      default: applyPreset('inertia'); break; // Modo relajado por defecto
+      case 0: // Diapositiva 1: Triángulos cálidos desvaneciéndose
+        break;
+      
+      case 1: // Diapositiva 2: Patrón plano de constelaciones frías con interacción de mouse
+        applyPreset('inertia'); 
+        params.constellationMode.value = 1.0;
+        params.particleSize.value = 0.014; 
+        simulation.reset();
+        break;
+
+      case 2: // Diapositiva 3: Esfera volumétrica con ondas rojas, líneas negras y blancas
+        applyPreset('inertia');
+        params.sphereMode.value = 1.0; 
+        params.particleSize.value = 0.015;
+        simulation.reset();
+        break;
+
+      case 3: // Diapositiva 4: Entramado geométrico de líneas rectas blancas y negras (Estilo Verónica Presta)
+        break;
+
+      case 4: // Diapositiva 5 ("Los eventos nunca fueron el objetivo..."): Planos isométricos apilados con gradientes
+        break;
+        
+      default: applyPreset('inertia'); break;
     }
   }
 
-  // Teclado para pasar diapositivas cómodamente
+  renderer.setAnimationLoop(() => {
+    const time = performance.now() * 0.001; 
+    params.time.value = time; 
+
+    simulation.updateVisualsAnimation(time);
+
+    if (currentSlide === 0) {
+      params.attractor.value.set(
+        Math.sin(time * 0.8) * 8.0, 
+        -2.0,                       
+        Math.cos(time * 0.5) * 4.0  
+      );
+    }
+
+    simulation.stepSimulation();
+    renderer.render(scene, camera);
+  });
+
   addEventListener('keydown', (event) => {
     if (event.code === 'ArrowRight' || event.code === 'Space') nextBtn.click();
     if (event.code === 'ArrowLeft') prevBtn.click();
   });
 
-  updateSlides(); // Estado inicial
+  updateSlides(); 
 
-  if(prevBtn && nextBtn) {
+  if (prevBtn && nextBtn) {
     prevBtn.addEventListener('click', () => {
       if (currentSlide > 0) {
         currentSlide--;
