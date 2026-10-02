@@ -95,30 +95,36 @@ async function main() {
     simulation.setSlideMode(currentSlide);
 
     switch(currentSlide) {
-      case 0: // Diapositiva 1: Triángulos cálidos desvaneciéndose
+      case 0: // Diapositiva 1
         break;
       
-      case 1: // Diapositiva 2: Patrón plano de constelaciones frías con interacción de mouse
+      case 1: // Diapositiva 2
         applyPreset('inertia'); 
         params.constellationMode.value = 1.0;
         params.particleSize.value = 0.014; 
         simulation.reset();
+        // Reimponemos el slide mode después del preset
+        simulation.setSlideMode(currentSlide); 
         break;
 
-      case 2: // Diapositiva 3: Esfera volumétrica con ondas rojas, líneas negras y blancas
+      case 2: // Diapositiva 3
         applyPreset('inertia');
         params.sphereMode.value = 1.0; 
         params.particleSize.value = 0.015;
         simulation.reset();
+        // Reimponemos el slide mode después del preset
+        simulation.setSlideMode(currentSlide); 
         break;
 
-      case 3: // Diapositiva 4: Entramado geométrico de líneas rectas blancas y negras (Estilo Verónica Presta)
-        break;
-
-      case 4: // Diapositiva 5 ("Los eventos nunca fueron el objetivo..."): Planos isométricos apilados con gradientes
+      case 3: // Diapositiva 4
+      case 4: // Diapositiva 5
         break;
         
-      default: applyPreset('inertia'); break;
+      default: 
+        // A partir de la diapositiva 6 en adelante (índices 5 al 12)
+        // Dejamos que 'slideVisuals.js' trabaje sin que 'applyPreset' sobrescriba
+        simulation.setSlideMode(currentSlide);
+        break;
     }
   }
 
