@@ -170,4 +170,40 @@ async function main() {
   }
 }
 
+// --- SELECTOR DE IDIOMA (ES / PORT) ---
+const TITLES = {
+  es: 'Presentación - Relevo Generacional',
+  pt: 'Apresentação - Renovação Geracional'
+};
+
+function setupLanguage() {
+  const toggle = document.getElementById('lang-toggle');
+  if (!toggle) return;
+
+  function setLang(lang) {
+    document.documentElement.lang = lang;
+    document.title = TITLES[lang];
+
+    document.querySelectorAll(`#presentation [data-${lang}]`).forEach((el) => {
+      el.innerHTML = el.dataset[lang];
+    });
+
+    toggle.querySelectorAll('span').forEach((s) => {
+      s.classList.toggle('active', s.dataset.lang === lang);
+    });
+
+    try { localStorage.setItem('lang', lang); } catch {}
+  }
+
+  toggle.addEventListener('click', () => {
+    setLang(document.documentElement.lang === 'pt' ? 'es' : 'pt');
+    toggle.blur(); // evita que la barra espaciadora vuelva a activar el botón
+  });
+
+  let saved = 'pt';
+  try { saved = localStorage.getItem('lang') || 'pt'; } catch {}
+  setLang(saved);
+}
+
+setupLanguage();
 main().catch(console.error);

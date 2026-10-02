@@ -9,7 +9,7 @@ export function createSimulation({ renderer, scene, params, count = 131072 }) {
   const velocityBuffer = instancedArray(count, 'vec3');
 
   // ========================================================
-  // NUEVO: DIAPOSITIVA 1 (Índice 0) - Onda Topográfica Fluida
+  // DIAPOSITIVA 1 (Índice 0) - Onda Topográfica Fluida
   // ========================================================
   const slide0Group = new THREE.Group();
   scene.add(slide0Group);
@@ -28,39 +28,46 @@ export function createSimulation({ renderer, scene, params, count = 131072 }) {
   for(let i=0; i < origWaveZ.length; i++) origWaveZ[i] = waveGeo.attributes.position.getZ(i);
 
   // ========================================================
-  // NUEVO: DIAPOSITIVA 2 (Índice 1) - Enjambre de Osciladores
+  // DIAPOSITIVA 2 (Índice 1) - Enjambre de Osciladores (Mejorado: más visible y brillante)
   // ========================================================
   const slide1Group = new THREE.Group();
   scene.add(slide1Group);
   slide1Group.visible = false;
   
-  const swarmCount = 500;
+  const swarmCount = 800; // Más partículas
   const swarmGeo = new THREE.BufferGeometry();
   const swarmPos = new Float32Array(swarmCount * 3);
   const swarmPhases = new Float32Array(swarmCount);
   for(let i=0; i < swarmCount; i++) {
     swarmPhases[i] = Math.random() * Math.PI * 2;
-    swarmPos[i*3] = (Math.random() - 0.5) * 35;
-    swarmPos[i*3+1] = (Math.random() - 0.5) * 20;
-    swarmPos[i*3+2] = (Math.random() - 0.5) * 15;
+    swarmPos[i*3] = (Math.random() - 0.5) * 30;
+    swarmPos[i*3+1] = (Math.random() - 0.5) * 18;
+    swarmPos[i*3+2] = (Math.random() - 0.5) * 12;
   }
   swarmGeo.setAttribute('position', new THREE.BufferAttribute(swarmPos, 3));
-  const swarmMat = new THREE.PointsMaterial({ color: 0x00d2ff, size: 0.15, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending });
+  // Puntos más grandes (size: 0.35) y opacidad total para máxima visibilidad sobre la foto
+  const swarmMat = new THREE.PointsMaterial({ color: 0x00f3ff, size: 0.35, transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending });
   const swarmMesh = new THREE.Points(swarmGeo, swarmMat);
   slide1Group.add(swarmMesh);
 
   // ========================================================
-  // NUEVO: DIAPOSITIVA 3 (Índice 2) - Túnel de Neón Cinematográfico
+  // DIAPOSITIVA 3 (Índice 2) - Túnel con Colores UPB (Oro, Rojo, Negro/Gris puro)
   // ========================================================
   const slide2Group = new THREE.Group();
   scene.add(slide2Group);
   slide2Group.visible = false;
   
   const tunnelFrames = [];
-  const tunnelColors = [0xff0033, 0x00ff66, 0x00ccff, 0xffcc00]; 
-  for(let i=0; i < 25; i++) {
+  // Colores institucionales UPB: Rojo caridad/valor, Oro fe/constancia, Blanco/Gris ciencia/modestia
+  const upbColors = [0xdc2626, 0xf59e0b, 0xffffff, 0xb91c1c, 0xfbbf24]; 
+  for(let i=0; i < 28; i++) {
     const frameGeo = new THREE.EdgesGeometry(new THREE.PlaneGeometry(16, 9));
-    const frameMat = new THREE.LineBasicMaterial({ color: tunnelColors[i % 4], transparent: true, opacity: 0 });
+    const frameMat = new THREE.LineBasicMaterial({ 
+      color: upbColors[i % upbColors.length], 
+      transparent: true, 
+      opacity: 0,
+      linewidth: 2 
+    });
     const frame = new THREE.LineSegments(frameGeo, frameMat);
     frame.position.z = -i * 1.5;
     slide2Group.add(frame);
@@ -115,6 +122,7 @@ export function createSimulation({ renderer, scene, params, count = 131072 }) {
   const stackedPlanes = [];
   const planeGeo = new THREE.PlaneGeometry(3.5, 3.5);
 
+  const mix = (a, b, t) => a + (b - a) * t;
   for (let i = 0; i < planeCount; i++) {
     const ratio = i / (planeCount - 1);
     const r = mix(0.12, 0.98, ratio);
@@ -135,9 +143,6 @@ export function createSimulation({ renderer, scene, params, count = 131072 }) {
   // DIAPOSITIVAS 6 a 13
   const extraVisuals = createExtraVisuals(scene);
 
-  // ========================================================
-  // COMPUTE SHADERS (Mantenemos la estructura para evitar errores en main)
-  // ========================================================
   const initParticles = Fn(() => {
     const i = instanceIndex;
     const p = positionBuffer.element(i);
@@ -168,10 +173,7 @@ export function createSimulation({ renderer, scene, params, count = 131072 }) {
     slide2Group.visible = (slideIndex === 2);
     slide4Group.visible = (slideIndex === 3);
     slide5Group.visible = (slideIndex === 4);
-    
-    // Ocultamos la malla de GPU por completo, ya que cada slide tiene su visual único
     mesh.visible = false; 
-    
     extraVisuals.setActive(slideIndex);
   }
 
@@ -190,32 +192,32 @@ export function createSimulation({ renderer, scene, params, count = 131072 }) {
       waveMat.color.setHSL(hue, 0.9, 0.5); 
     }
 
-    // Slide 2: Enjambre
+    // Slide 2: Enjambre brillante
     if (slide1Group.visible) {
       const posAttr = swarmGeo.attributes.position;
       for (let i = 0; i < swarmCount; i++) {
         let x = posAttr.getX(i);
         let y = posAttr.getY(i);
         const phase = swarmPhases[i];
-        x += Math.sin(time * 0.5 + phase) * 0.02;
-        y += Math.cos(time * 0.6 + phase) * 0.02;
+        x += Math.sin(time * 0.6 + phase) * 0.03;
+        y += Math.cos(time * 0.7 + phase) * 0.03;
         posAttr.setX(i, x);
         posAttr.setY(i, y);
       }
       posAttr.needsUpdate = true;
-      slide1Group.rotation.y = Math.sin(time * 0.2) * 0.1;
-      slide1Group.rotation.x = Math.cos(time * 0.15) * 0.1;
+      slide1Group.rotation.y = Math.sin(time * 0.2) * 0.12;
+      slide1Group.rotation.x = Math.cos(time * 0.15) * 0.12;
     }
 
-    // Slide 3: Túnel
+    // Slide 3: Túnel UPB
     if (slide2Group.visible) {
       tunnelFrames.forEach((frame) => {
-        frame.position.z += 0.15;
-        if (frame.position.z > 2) frame.position.z -= 25 * 1.5;
+        frame.position.z += 0.18;
+        if (frame.position.z > 2) frame.position.z -= 28 * 1.5;
         const dist = Math.abs(frame.position.z - 2);
-        frame.material.opacity = Math.max(0, 1.0 - (dist / (25 * 1.5)));
+        frame.material.opacity = Math.max(0, 1.1 - (dist / (28 * 1.3)));
       });
-      slide2Group.rotation.z = Math.sin(time * 0.2) * 0.1;
+      slide2Group.rotation.z = Math.sin(time * 0.25) * 0.12;
     }
 
     // Slide 4: Entramado
@@ -227,7 +229,7 @@ export function createSimulation({ renderer, scene, params, count = 131072 }) {
         x += slide4Velocities[i * 3];
         y += slide4Velocities[i * 3 + 1];
         if (x > 11 || x < -11) slide4Velocities[i * 3] *= -1;
-        if (y > 7 || y < -7) slide4Velocities[i * 3 + 1] *= -1;
+        if (y > 7 || y < -7) slide4Velocities[i * 3] *= -1;
         posAttr.setXY(i, x, y);
       }
       posAttr.needsUpdate = true;
